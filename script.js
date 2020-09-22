@@ -1,5 +1,6 @@
 d3.csv("freq_by_state_latlong.csv", function(err, data) {
 
+    
   var config = {"color1":"#fee6ce","color2":"#e6550d","stateDataColumn":"NAME","valueDataColumn":"Total"}
   
   var WIDTH = 750, HEIGHT = 350;
@@ -94,17 +95,21 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
       .attr("width", width)
       .attr("height", height)
       .attr("float", "left")
-      .attr("class", "float-child");
+      .attr("class", "float-child")
+      .attr("class", "map")
     
   //adding this infobox to show info about that state (another svg)
    var infoBox = d3.select("#canvas-svg").append("svg")
-        .attr("width", width/2)
+        .attr("width", width)
         .attr("height", height)
         .attr("float", "left")
         .attr("class", "float-child")
+        .append('text')
+        .attr("x","20")
+        .attr("y", "35")
         .text("this is a test");
 
-           
+//    var mapDots = d3.select("map").append("svg");
 
   d3.tsv("https://s3-us-west-2.amazonaws.com/vida-public/geo/us-state-names.tsv", function(error, names) {
   
@@ -184,7 +189,29 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         .attr("class", "states")
         .attr("transform", "scale(" + SCALE + ")")
         .attr("d", path);
+      
+    //replace dots for deaths  
+    d3.csv("freq_by_city_latlong.csv", function(err, cityData) {
+        console.log(cityData);
+//         
+//         mapDots.selectAll("circle")
+//         .data(cityData) 
+//         .enter()
+//         .append("circle")
+//         .attr("cx", 150)
+//         .attr("cy", 150)
+// //         .attr("cy", function(d) {
+// //             return projection([d.lng, d.lat])[1];
+// //         })
+//         .attr("r", 50)
+//             .style("fill", "rgb(217,91,67)")	
+//             .style("opacity", 0.85)	
+        
+    });//end of citydata
+  
+   
   });
   
   });
 });
+

@@ -3,11 +3,11 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
     
   var config = {"color1":"#fee6ce","color2":"#e6550d","stateDataColumn":"NAME","valueDataColumn":"Total"}
   
-  var WIDTH = 750, HEIGHT = 350;
+  var WIDTH = 850, HEIGHT = 500;
   
   var COLOR_COUNTS = 9;
   
-  var SCALE = 0.7;
+  var SCALE = 1;
   
   function Interpolate(start, end, steps, count) {
       var s = start,
@@ -90,6 +90,8 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
       .range(d3.range(COLOR_COUNTS).map(function(i) { return i }));
   
   var path = d3.geo.path();
+  
+  var projection = d3.geo.albersUsa();
   
   var svg = d3.select("#canvas-svg").append("svg")
       .attr("width", width)
@@ -213,19 +215,22 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
       
     //replace dots for deaths  
     d3.csv("freq_by_city_latlong.csv", function(err, cityData) {
-        console.log(cityData);
+//         console.log(cityData);
         
         mapDots.selectAll("circle")
         .data(cityData) 
         .enter()
         .append("circle")
-        .attr("cx", 150)
-        .attr("cy", 150)
-//         .attr("cy", function(d) {
-//             return projection([d.lng, d.lat])[1];
-//         })
-        .attr("r", 5)
-            .style("fill", "rgb(217,91,67)")	
+        .attr("cx", function(d) {
+            return projection([d.lng, d.lat])[0];
+        })
+        .attr("cy", function(d) {
+            return projection([d.lng, d.lat])[1];
+        })
+        .attr("r", function(d) {
+            return Math.sqrt(parseInt(d.males+d.females) * 0.03);
+        })
+            .style("fill", "rgb(153, 13, 3)")	
             .style("opacity", 0.85)	
         
     });//end of citydata

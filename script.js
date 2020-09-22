@@ -109,7 +109,7 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         .attr("y", "35")
         .text("this is a test");
 
-//    var mapDots = d3.select("map").append("svg");
+   var mapDots = d3.select(".map");
 
   d3.tsv("https://s3-us-west-2.amazonaws.com/vida-public/geo/us-state-names.tsv", function(error, names) {
   
@@ -178,10 +178,31 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
                 .style("top", (d3.event.layerY + 15) + "px")
                 .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
             }
-        })
+            
+            var infoHtml = "";
+        
+//             infoHtml += "<div class=\"info-text\">";
+            infoHtml += "<text class=\"info_key\" x =\"20\", y = \"30\" >";
+            infoHtml += id_name_map[d.id];
+            infoHtml += "</text>";
+            infoHtml += "<text class=\"info_value\" x =\"20\", y = \"100\">";
+            infoHtml += (valueById.get(d.id) ? valueFormat(valueById.get(d.id)) : "");
+            infoHtml += "";
+            infoHtml += "</text>";
+//             infoHtml += "</div>";
+            
+            $(".float-child").html(infoHtml);
+            $(this).attr("fill-opacity", "0.5");
+            $(".float-child").show();
+        
+        
+        }) //end of mouse in
         .on("mouseout", function() {
                 $(this).attr("fill-opacity", "1.0");
                 $("#tooltip-container").hide();
+                $(".info_key").hide();
+                $(".info_value").hide();
+        
             });
   
     svg.append("path")
@@ -193,19 +214,19 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
     //replace dots for deaths  
     d3.csv("freq_by_city_latlong.csv", function(err, cityData) {
         console.log(cityData);
-//         
-//         mapDots.selectAll("circle")
-//         .data(cityData) 
-//         .enter()
-//         .append("circle")
-//         .attr("cx", 150)
-//         .attr("cy", 150)
-// //         .attr("cy", function(d) {
-// //             return projection([d.lng, d.lat])[1];
-// //         })
-//         .attr("r", 50)
-//             .style("fill", "rgb(217,91,67)")	
-//             .style("opacity", 0.85)	
+        
+        mapDots.selectAll("circle")
+        .data(cityData) 
+        .enter()
+        .append("circle")
+        .attr("cx", 150)
+        .attr("cy", 150)
+//         .attr("cy", function(d) {
+//             return projection([d.lng, d.lat])[1];
+//         })
+        .attr("r", 5)
+            .style("fill", "rgb(217,91,67)")	
+            .style("opacity", 0.85)	
         
     });//end of citydata
   

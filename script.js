@@ -215,20 +215,50 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         
             })
         .on("click", function(d){
-            console.log('clicked')
+            var stateName = id_name_map[d.id];
+            console.log('clicked', stateName);
+            d3.csv("freq_by_city_latlong.csv", function(data){
+                xloc = 20
+                yloc = 35
+                for (var e=0; e<data.length; e++){
+                     if(data[e].state_name == stateName){
+                             yloc += 10
+                             console.log(data[e].city, 'males:', data[e].males, 'females:', data[e].females);
+                             d3.selectAll('#infoBox')
+                               .append('text')
+                               .attr("x",xloc)
+                               .attr("y", yloc)
+                               .text(data[e].city+' males:'+data[e].males+ ' females:'+ data[e].females)
+                     }
+                }
+            
+            });
+//             for (var e = 0; e<=frequency.length; e++){
+//                 if (stateName == freqency.state_name[e]){
+//                     console.log('stateName == freqency.state_name[e]')
+//                 }
+//             }
+                
+//                     console.log('yesss')
+                
+//                 function cityFreq(freq){
+//                     console.log(freq)
+//                 }
+//                 cityFreq(freq)
+//             }
         //getting this part ready for the plots
             var Barhtml = "";
-            var stateName = id_name_map[d.id];
+
+            var totalDeathInState = valueFormat(valueById.get(d.id))
         
-            Barhtml += "<div class=\"tooltip_kv\">";
-            Barhtml += "<span class=\"tooltip_key\">";
+            Barhtml += "<text class=\"info_key\" x =\"20\", y = \"30\" >";
             Barhtml += stateName;
-            Barhtml += "</span>";
-            Barhtml += "<span class=\"tooltip_value\">";
-            Barhtml += (valueById.get(d.id) ? valueFormat(valueById.get(d.id)) : "");
+            Barhtml += "</text>";
+            Barhtml += "<text class=\"info_value\" x =\"20\", y = \"100\">";
+            Barhtml += (valueById.get(d.id) ?  totalDeathInState: "");
             Barhtml += "";
-            Barhtml += "</span>";
-            Barhtml += "</div>";
+            Barhtml += "</text>";
+
             
             $("#infoBox").html(Barhtml);
             $(this).attr("fill-opacity", "0.5");
@@ -287,3 +317,50 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
   });
 });
 
+function clickCity(d,i){
+    console.log(d.city)
+//   cityContainer.attr("display", "block");
+// barChartTitle.attr("display","block")
+//                   .text(d.city+" Death Rate");
+// totalCityDeaths.attr("display","block")
+//                   .text("Total number of deaths: "+ d.total);
+
+// totalCityDeathsFemale.attr("display","block")
+//                   .text("# Female deaths: "+ d.females);
+
+// totalCityDeathsMale.attr("display","block")
+//                   .text("# Male deaths: "+ d.males);
+
+// genderTitle.attr("display","block").text("# of Males/Females")
+
+
+// dataNew = [d.males,d.females];
+
+// var pie = d3.pie();
+
+// var arcs = svg.selectAll("arc")
+//               .data(pie(dataNew))
+//               .enter()
+//               .append("g")
+//               .attr("id", "arcs")
+//               .attr("opacity",1.0)
+//               .attr("transform", "translate(720,650)")
+//               // .on("click", closePopUp)
+              
+             
+//   arcs.append("path")
+//       .attr("fill", function(d, i) {
+//         return genderColors[i];
+//       })
+//       .attr("d", arc)
+//       .attr("opacity",0.9);
+
+//   arcs.append("text")
+//       .attr("transform", function(d) {
+//         return "translate(" + arc.centroid(d) + ")";
+//       })
+//       .attr("text-anchor", "middle")
+//       .text(function(d) {
+//         return d.value;
+//       });
+}

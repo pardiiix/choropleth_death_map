@@ -106,12 +106,19 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         .attr("height", height)
         .attr("float", "left")
         .attr("class", "float-child")
+        .attr("id", "infoBox")
         .append('text')
         .attr("x","20")
         .attr("y", "35")
         .text("this is a test");
 
    var mapDots = d3.select(".map");
+   
+   var info = d3.select("#infoBox")
+                .append("text")
+                .attr("x", "20")
+                .attr("y", "50")
+                .text("using infoBox id");
 
   d3.tsv("https://s3-us-west-2.amazonaws.com/vida-public/geo/us-state-names.tsv", function(error, names) {
   
@@ -151,10 +158,11 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         .attr("d", path)
         .on("mousemove", function(d) {
             var html = "";
+            var stateName = id_name_map[d.id];
   
             html += "<div class=\"tooltip_kv\">";
             html += "<span class=\"tooltip_key\">";
-            html += id_name_map[d.id];
+            html += stateName;
             html += "</span>";
             html += "<span class=\"tooltip_value\">";
             html += (valueById.get(d.id) ? valueFormat(valueById.get(d.id)) : "");
@@ -165,7 +173,9 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
             $("#tooltip-container").html(html);
             $(this).attr("fill-opacity", "0.5");
             $("#tooltip-container").show();
-            
+        
+//             console.log(id_name_map)
+        
             var coordinates = d3.mouse(this);
             
             var map_width = $('.states-choropleth')[0].getBoundingClientRect().width;
@@ -183,7 +193,6 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
             
             var infoHtml = "";
         
-//             infoHtml += "<div class=\"info-text\">";
             infoHtml += "<text class=\"info_key\" x =\"20\", y = \"30\" >";
             infoHtml += id_name_map[d.id];
             infoHtml += "</text>";
@@ -191,7 +200,6 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
             infoHtml += (valueById.get(d.id) ? valueFormat(valueById.get(d.id)) : "");
             infoHtml += "";
             infoHtml += "</text>";
-//             infoHtml += "</div>";
             
             $(".float-child").html(infoHtml);
             $(this).attr("fill-opacity", "0.5");
@@ -205,7 +213,45 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
                 $(".info_key").hide();
                 $(".info_value").hide();
         
-            });
+            })
+        .on("click", function(d){
+            console.log('clicked')
+        //getting this part ready for the plots
+            var Barhtml = "";
+            var stateName = id_name_map[d.id];
+        
+            Barhtml += "<div class=\"tooltip_kv\">";
+            Barhtml += "<span class=\"tooltip_key\">";
+            Barhtml += stateName;
+            Barhtml += "</span>";
+            Barhtml += "<span class=\"tooltip_value\">";
+            Barhtml += (valueById.get(d.id) ? valueFormat(valueById.get(d.id)) : "");
+            Barhtml += "";
+            Barhtml += "</span>";
+            Barhtml += "</div>";
+            
+            $("#infoBox").html(Barhtml);
+            $(this).attr("fill-opacity", "0.5");
+            $("#infoBox").show();
+        
+//             console.log(id_name_map)
+        
+            var coordinates = d3.mouse(this);
+            
+            var map_width = $('.states-choropleth')[0].getBoundingClientRect().width;
+            
+            if (d3.event.layerX < map_width / 2) {
+              d3.select("#tooltip-container")
+                .style("top", (d3.event.layerY + 15) + "px")
+                .style("left", (d3.event.layerX + 15) + "px");
+            } else {
+              var tooltip_width = $("#tooltip-container").width();
+              d3.select("#tooltip-container")
+                .style("top", (d3.event.layerY + 15) + "px")
+                .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
+            }
+        })
+      ;
   
     svg.append("path")
         .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
@@ -221,14 +267,14 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         .data(cityData) 
         .enter()
         .append("circle")
-        .attr("cx", function(d) {
-            return projection([d.lng, d.lat])[0];
+        .attr("cx", function(x) {
+            return projection([x.lng, x.lat])[0];
         })
-        .attr("cy", function(d) {
-            return projection([d.lng, d.lat])[1];
+        .attr("cy", function(x) {
+            return projection([x.lng, x.lat])[1];
         })
-        .attr("r", function(d) {
-            return Math.sqrt(parseInt(d.males+d.females) * 0.03);
+        .attr("r", function(x) {
+            return Math.sqrt(parseInt(x.males+x.females) * 0.03);
         })
             .style("fill", "rgb(153, 13, 3)")	
             .style("opacity", 0.85)	

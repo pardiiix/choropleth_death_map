@@ -156,7 +156,7 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
           }
         })
         .attr("d", path)
-        .on("mousemove", function(d) {
+        .on("mouseover", function(d) {
             var html = "";
             var stateName = id_name_map[d.id];
   
@@ -218,19 +218,53 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
             var stateName = id_name_map[d.id];
             console.log('clicked', stateName);
             d3.csv("freq_by_city_latlong.csv", function(data){
-                xloc = 20
-                yloc = 35
-                for (var e=0; e<data.length; e++){
-                     if(data[e].state_name == stateName){
-                             yloc += 10
-                             console.log(data[e].city, 'males:', data[e].males, 'females:', data[e].females);
-                             d3.selectAll('#infoBox')
-                               .append('text')
-                               .attr("x",xloc)
-                               .attr("y", yloc)
-                               .text(data[e].city+' males:'+data[e].males+ ' females:'+ data[e].females)
-                     }
-                }
+//                 xloc = 20
+//                 yloc = 35
+//                 for (var e=0; e<data.length; e++){
+//                      if(data[e].state_name == stateName){
+//                              yloc += 10
+//                              console.log(data[e].city, 'males:', data[e].males, 'females:', data[e].females);
+//                              d3.selectAll('#infoBox')
+//                                .append('text')
+//                                .attr("x",xloc)
+//                                .attr("y", yloc)
+//                                .text(data[e].city+' males:'+data[e].males+ ' females:'+ data[e].females)
+                    
+                var Barwidth = 960;
+                var Barheight = 500;
+                var Baradj = 20;
+//                 var barChartSVG = d3.select('#infoBox').append("svg")
+//                                     .attr("preserveAspectRatio", "xMinYMin meet")
+//                                     .attr("viewBox", "-" + Baradj + " -"+ Baradj + " " + (Barwidth + Baradj) + " " + (Barheight + Baradj))
+//                                     .style("padding", 5)
+//                                     .style("margin", 5)
+//                                     .classed("svg-content", true);
+             data.map(function(d) {
+             d.males = +d.males;
+             return d;});
+            
+                
+                
+                svg.selectAll("#infoBox")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", function (d, i) {
+                    for (i>0; i < data.length; i++) {
+                        return i;
+                    }
+                })
+                .attr("y", function (d) {
+                    return Barheight - d.males;
+                })
+                .attr("width", 20)
+                .attr("height", function (d) {
+                    return d.males+ d.females;
+                });
+            
+//             } //end of if
+//                 } //end of for
             
             });
 //             for (var e = 0; e<=frequency.length; e++){

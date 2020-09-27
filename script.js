@@ -3,7 +3,7 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
     
   var config = {"color1":"#fee6ce","color2":"#e6550d","stateDataColumn":"NAME","valueDataColumn":"Total"}
   
-  var WIDTH = 850, HEIGHT = 500;
+  var WIDTH = 1000, HEIGHT = 550;
   
   var COLOR_COUNTS = 9;
   
@@ -191,19 +191,19 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
                 .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
             }
             
-            var infoHtml = "";
+//             var infoHtml = "";
         
-            infoHtml += "<text class=\"info_key\" x =\"20\", y = \"30\" >";
-            infoHtml += id_name_map[d.id];
-            infoHtml += "</text>";
-            infoHtml += "<text class=\"info_value\" x =\"20\", y = \"100\">";
-            infoHtml += (valueById.get(d.id) ? valueFormat(valueById.get(d.id)) : "");
-            infoHtml += "";
-            infoHtml += "</text>";
+//             infoHtml += "<text class=\"info_key\" x =\"20\", y = \"30\" >";
+//             infoHtml += id_name_map[d.id];
+//             infoHtml += "</text>";
+//             infoHtml += "<text class=\"info_value\" x =\"20\", y = \"100\">";
+//             infoHtml += (valueById.get(d.id) ? valueFormat(valueById.get(d.id)) : "");
+//             infoHtml += "";
+//             infoHtml += "</text>";
             
-            $(".float-child").html(infoHtml);
-            $(this).attr("fill-opacity", "0.5");
-            $(".float-child").show();
+//             $(".float-child").html(infoHtml);
+//             $(this).attr("fill-opacity", "0.5");
+//             $(".float-child").show();
         
         
         }) //end of mouse in
@@ -215,9 +215,82 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         
             })
         .on("click", function(d){
+            $( "svg#infoBox.float-child" ).empty();
             var stateName = id_name_map[d.id];
             console.log('clicked', stateName);
-            d3.csv("freq_by_city_latlong.csv", function(data){
+            
+            
+        
+            d3.csv("freq_by_city_latlong.csv", function(d){
+                var bardata = [];
+                var barCities = [];
+                console.log('first bardata:' , bardata)
+                for (var i =0; i < d.length; i++){
+//                     console.log(d[i].state);
+                    if(d[i].state_name == stateName){
+                        bardata.push(d[i].males);
+                        barCities.push(d[i].city)
+                    }  
+                }
+//                 var topValues = bardata.sort((a,b) => b-a).slice(0,40);
+//                 bardata = topValues
+                bardata = bardata.slice(0,50);
+                console.log('last bardata: ',bardata);
+                console.log('barCities:', barCities)
+                var bheight = 400,
+                    bwidth = 500,
+                    barWidth = 15,
+                    barOffset = 3;
+                
+                var yAxisValues = d3.scale.linear()
+                                    .domain([0, 100])
+                                    .range([height, 0]);
+                var yAxisTicks = d3.svg.axis()
+                                .scale(yAxisValues)
+                                .ticks(10)
+                                .orient("right");
+                
+                var xAxisValues = d3.scale.ordinal()
+                                    .domain(barCities)
+                                    .range([0, bwidth - 5]);
+//                                     .padding(0.1)
+//                                     .range([margin.left, bwidth - margin.right])
+                var xAxisTicks = d3.svg.axis()
+                                .scale(xAxisValues)
+                                .ticks(50)
+                                .orient("bottom");
+                
+                d3.select("svg#infoBox.float-child").append('svg')
+                    .attr('width', bwidth)
+                    .attr('height', bheight)
+//                     .style('background', '#c9d7d6')
+                    .append('g')
+                    .selectAll('rect').data(bardata)
+                    .enter().append('rect')
+                    .style('fill', 'rgb(153, 13, 3)')
+                    .attr('width', barWidth)
+                    .attr('height', function(d){
+                        return d;
+                    })
+                    .attr('x', function(d,i){
+                    return i * (barWidth + barOffset)
+                })
+                    .attr('y', function(d){
+                    return bheight - d;
+                })
+              var yGuide = d3.select('svg#infoBox.float-child svg').append('g')
+                      .attr('transform', 'translate(-5, -90)')
+                      .call(yAxisTicks)
+              
+              var xGuide = d3.select('svg#infoBox.float-child svg').append('g')
+                      .attr('transform', 'translate(-5, 397)')
+                      .call(xAxisTicks)
+            })
+
+           
+          
+
+//             d3.csv("freq_by_city_latlong.csv", function(data){
 //                 xloc = 20
 //                 yloc = 35
 //                 for (var e=0; e<data.length; e++){
@@ -230,72 +303,24 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
 //                                .attr("y", yloc)
 //                                .text(data[e].city+' males:'+data[e].males+ ' females:'+ data[e].females)
                     
-                var Barwidth = 960;
-                var Barheight = 500;
-                var Baradj = 20;
-//                 var barChartSVG = d3.select('#infoBox').append("svg")
-//                                     .attr("preserveAspectRatio", "xMinYMin meet")
-//                                     .attr("viewBox", "-" + Baradj + " -"+ Baradj + " " + (Barwidth + Baradj) + " " + (Barheight + Baradj))
-//                                     .style("padding", 5)
-//                                     .style("margin", 5)
-//                                     .classed("svg-content", true);
-             data.map(function(d) {
-             d.males = +d.males;
-             return d;});
-            
-                
-                
-                svg.selectAll("#infoBox")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("class", "bar")
-                .attr("x", function (d, i) {
-                    for (i>0; i < data.length; i++) {
-                        return i;
-                    }
-                })
-                .attr("y", function (d) {
-                    return Barheight - d.males;
-                })
-                .attr("width", 20)
-                .attr("height", function (d) {
-                    return d.males+ d.females;
-                });
-            
-//             } //end of if
-//                 } //end of for
-            
-            });
-//             for (var e = 0; e<=frequency.length; e++){
-//                 if (stateName == freqency.state_name[e]){
-//                     console.log('stateName == freqency.state_name[e]')
-//                 }
-//             }
-                
-//                     console.log('yesss')
-                
-//                 function cityFreq(freq){
-//                     console.log(freq)
-//                 }
-//                 cityFreq(freq)
-//             }
+        //=================
+
         //getting this part ready for the plots
-            var Barhtml = "";
+//             var Barhtml = "";
 
-            var totalDeathInState = valueFormat(valueById.get(d.id))
+//             var totalDeathInState = valueFormat(valueById.get(d.id))
         
-            Barhtml += "<text class=\"info_key\" x =\"20\", y = \"30\" >";
-            Barhtml += stateName;
-            Barhtml += "</text>";
-            Barhtml += "<text class=\"info_value\" x =\"20\", y = \"100\">";
-            Barhtml += (valueById.get(d.id) ?  totalDeathInState: "");
-            Barhtml += "";
-            Barhtml += "</text>";
+//             Barhtml += "<text class=\"info_key\" x =\"20\", y = \"30\" >";
+//             Barhtml += stateName;
+//             Barhtml += "</text>";
+//             Barhtml += "<text class=\"info_value\" x =\"20\", y = \"100\">";
+//             Barhtml += (valueById.get(d.id) ?  totalDeathInState: "");
+//             Barhtml += "";
+//             Barhtml += "</text>";
 
             
-            $("#infoBox").html(Barhtml);
-            $(this).attr("fill-opacity", "0.5");
+//             $("#infoBox").html(Barhtml);
+//             $(this).attr("fill-opacity", "0.5");
             $("#infoBox").show();
         
 //             console.log(id_name_map)
@@ -344,57 +369,11 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
             .style("opacity", 0.85)	
         
     });//end of citydata
-  
+
    
   });
   
   });
 });
 
-function clickCity(d,i){
-    console.log(d.city)
-//   cityContainer.attr("display", "block");
-// barChartTitle.attr("display","block")
-//                   .text(d.city+" Death Rate");
-// totalCityDeaths.attr("display","block")
-//                   .text("Total number of deaths: "+ d.total);
-
-// totalCityDeathsFemale.attr("display","block")
-//                   .text("# Female deaths: "+ d.females);
-
-// totalCityDeathsMale.attr("display","block")
-//                   .text("# Male deaths: "+ d.males);
-
-// genderTitle.attr("display","block").text("# of Males/Females")
-
-
-// dataNew = [d.males,d.females];
-
-// var pie = d3.pie();
-
-// var arcs = svg.selectAll("arc")
-//               .data(pie(dataNew))
-//               .enter()
-//               .append("g")
-//               .attr("id", "arcs")
-//               .attr("opacity",1.0)
-//               .attr("transform", "translate(720,650)")
-//               // .on("click", closePopUp)
-              
-             
-//   arcs.append("path")
-//       .attr("fill", function(d, i) {
-//         return genderColors[i];
-//       })
-//       .attr("d", arc)
-//       .attr("opacity",0.9);
-
-//   arcs.append("text")
-//       .attr("transform", function(d) {
-//         return "translate(" + arc.centroid(d) + ")";
-//       })
-//       .attr("text-anchor", "middle")
-//       .text(function(d) {
-//         return d.value;
-//       });
-}
+// }

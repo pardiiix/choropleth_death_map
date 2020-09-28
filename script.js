@@ -296,7 +296,7 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
                 console.log('last bardata: ',bardata);
                 console.log('barCities:', barCities)
                 var bheight = 400,
-                    bwidth = 500,
+                    bwidth = 1000,
                     barWidth = 15,
                     barOffset = 3;
                 
@@ -310,12 +310,16 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
                 
                 var xAxisValues = d3.scale.ordinal()
                                     .domain(barCities)
-                                    .range([0, bwidth - 5]);
+                                    .rangeRoundBands([0, bwidth], .1);
 //                                     .padding(0.1)
 //                                     .range([margin.left, bwidth - margin.right])
+                
+//                 var xAxisValues2 = d3.scale.point().domain(barCities)
+//                   .tickValues(barCities)
+                
                 var xAxisTicks = d3.svg.axis()
-                                .scale(xAxisValues)
-                                .ticks(50)
+                                .scale(xAxisValues).tickSize(13)
+                                .tickValues(barCities)
                                 .orient("bottom");
                 
                 d3.select("#infoBox").append('g').append('svg')

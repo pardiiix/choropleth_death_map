@@ -167,8 +167,57 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
             html += "<span class=\"tooltip_value\">";
             html += (valueById.get(d.id) ? valueFormat(valueById.get(d.id)) : "");
             html += "";
+            html += "<div class=\"pie_chart\">";
+//             console.log(data)
+            html += "</div>";
             html += "</span>";
             html += "</div>";
+            
+            var piedata = []
+            var pieWidth = 80;
+            var pieHeight = 80;
+            var pieMargin = 5;
+            var pieRadius = Math.min(pieWidth, pieHeight) / 2 - pieMargin
+            var pieColor;
+            
+            var piesvg = d3.select("#infoBox")
+              .append("svg")
+                .attr("width", pieWidth)
+                .attr("height", pieHeight)
+              .append("g")
+                .attr("transform", "translate(" + pieWidth / 2 + "," + pieHeight / 2 + ")");
+
+
+            for (var i =0; i < data.length; i++){
+//                     console.log(data[i].NAME);
+                if(data[i].NAME == stateName){
+                    piedata.push(data[i].males, data[i].females);
+                    console.log(piedata)
+                    pieColor = d3.scale.ordinal()
+                      .domain(piedata)
+                      .range(["#98abc5", "#a05d56"])
+                    var pie = d3.layout.pie()
+                      .value(function(d) {return d.value; })
+                    var data_ready = pie(d3.entries(piedata))
+                    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+                    piesvg
+                      .selectAll('whatever')
+                      .data(data_ready)
+                      .enter()
+                      .append('path')
+                      .attr('d', d3.svg.arc()
+                        .innerRadius(0)
+                        .outerRadius(pieRadius)
+                      )
+                      .attr('fill', function(d){ return(pieColor(d.data.key)) })
+                      .attr("stroke", "black")
+                      .style("stroke-width", "1px")
+                      .style("opacity", 0.7)
+                    
+                    
+
+                }  
+            }
             
             $("#tooltip-container").html(html);
             $(this).attr("fill-opacity", "0.5");
@@ -184,8 +233,10 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
               d3.select("#tooltip-container")
                 .style("top", (d3.event.layerY + 15) + "px")
                 .style("left", (d3.event.layerX + 15) + "px");
+//                 console.log('tooltip_height', $("#tooltip-container").height())
             } else {
               var tooltip_width = $("#tooltip-container").width();
+              
               d3.select("#tooltip-container")
                 .style("top", (d3.event.layerY + 15) + "px")
                 .style("left", (d3.event.layerX - tooltip_width - 30) + "px");

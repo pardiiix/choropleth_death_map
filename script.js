@@ -157,6 +157,7 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         })
         .attr("d", path)
         .on("mouseover", function(d) {
+            $( "svg#infoBox" ).empty();
             var html = "";
             var stateName = id_name_map[d.id];
   
@@ -167,11 +168,15 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
             html += "<span class=\"tooltip_value\">";
             html += (valueById.get(d.id) ? valueFormat(valueById.get(d.id)) : "");
             html += "";
-            html += "<div class=\"pie_chart\">";
-//             console.log(data)
-            html += "</div>";
+//             html += "<div class=\"pie_chart\">";
+// //             console.log(data)
+//             html += "</div>";
             html += "</span>";
             html += "</div>";
+            
+            $("#tooltip-container").html(html);
+            $(this).attr("fill-opacity", "0.5");
+            $("#tooltip-container").show();
             
             var piedata = []
             var pieWidth = 80;
@@ -187,15 +192,13 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
               .append("g")
                 .attr("transform", "translate(" + pieWidth / 2 + "," + pieHeight / 2 + ")");
 
-
+//creating a pie chart for men vs women
             for (var i =0; i < data.length; i++){
-//                     console.log(data[i].NAME);
                 if(data[i].NAME == stateName){
                     piedata.push(data[i].males, data[i].females);
-                    console.log(piedata)
                     pieColor = d3.scale.ordinal()
                       .domain(piedata)
-                      .range(["#98abc5", "#a05d56"])
+                      .range(["#98abc5", "pink"])
                     var pie = d3.layout.pie()
                       .value(function(d) {return d.value; })
                     var data_ready = pie(d3.entries(piedata))
@@ -210,7 +213,7 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
                         .outerRadius(pieRadius)
                       )
                       .attr('fill', function(d){ return(pieColor(d.data.key)) })
-                      .attr("stroke", "black")
+                      .attr("stroke", "light-grey")
                       .style("stroke-width", "1px")
                       .style("opacity", 0.7)
                     
@@ -219,9 +222,7 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
                 }  
             }
             
-            $("#tooltip-container").html(html);
-            $(this).attr("fill-opacity", "0.5");
-            $("#tooltip-container").show();
+
         
 //             console.log(id_name_map)
         
@@ -266,7 +267,7 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         
             })
         .on("click", function(d){
-            $( "svg#infoBox.float-child" ).empty();
+//             $( "svg#infoBox.float-child" ).empty();
             var stateName = id_name_map[d.id];
             console.log('clicked', stateName);
             
@@ -373,24 +374,8 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
 //             $("#infoBox").html(Barhtml);
 //             $(this).attr("fill-opacity", "0.5");
             $("#infoBox").show();
-        
-//             console.log(id_name_map)
-        
-            var coordinates = d3.mouse(this);
-            
-            var map_width = $('.states-choropleth')[0].getBoundingClientRect().width;
-            
-            if (d3.event.layerX < map_width / 2) {
-              d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY + 15) + "px")
-                .style("left", (d3.event.layerX + 15) + "px");
-            } else {
-              var tooltip_width = $("#tooltip-container").width();
-              d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY + 15) + "px")
-                .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
-            }
-        })
+
+        }) //end of onclick
       ;
   
     svg.append("path")

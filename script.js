@@ -107,18 +107,21 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
         .attr("float", "left")
         .attr("class", "float-child")
         .attr("id", "infoBox")
-        .append('text')
+
+   var textTemp = d3.select("#infoBox")   
+       .append('text')
+       .attr("class", "temp-text")
         .attr("x","20")
         .attr("y", "35")
-        .text("this is a test");
+        .text("The data will be shown here");
 
    var mapDots = d3.select(".map");
    
-   var info = d3.select("#infoBox")
-                .append("text")
-                .attr("x", "20")
-                .attr("y", "50")
-                .text("using infoBox id");
+//    var info = d3.select("#infoBox")
+//                 .append("text")
+//                 .attr("x", "20")
+//                 .attr("y", "50")
+//                 .text("using infoBox id");
 
   d3.tsv("https://s3-us-west-2.amazonaws.com/vida-public/geo/us-state-names.tsv", function(error, names) {
   
@@ -156,8 +159,12 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
           }
         })
         .attr("d", path)
+      
+      
         .on("mouseover", function(d) {
-            $( "svg#infoBox" ).empty();
+            $( ".pieChart" ).empty();
+            $( ".temp-text" ).empty();
+        
             var html = "";
             var stateName = id_name_map[d.id];
   
@@ -179,18 +186,19 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
             $("#tooltip-container").show();
             
             var piedata = []
-            var pieWidth = 80;
-            var pieHeight = 80;
+            var pieWidth = 500;
+            var pieHeight = 500;
             var pieMargin = 5;
-            var pieRadius = Math.min(pieWidth, pieHeight) / 2 - pieMargin
+            var pieRadius = Math.min(pieWidth, pieHeight) / 10 - pieMargin
             var pieColor;
             
             var piesvg = d3.select("#infoBox")
-              .append("svg")
+              .append("g").append("svg")
+                .attr("class", "pieChart")
                 .attr("width", pieWidth)
                 .attr("height", pieHeight)
               .append("g")
-                .attr("transform", "translate(" + pieWidth / 2 + "," + pieHeight / 2 + ")");
+                .attr("transform", "translate(" + pieWidth / 10 + "," + pieHeight / 10 + ")");
 
 //creating a pie chart for men vs women
             for (var i =0; i < data.length; i++){
@@ -213,12 +221,10 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
                         .outerRadius(pieRadius)
                       )
                       .attr('fill', function(d){ return(pieColor(d.data.key)) })
-                      .attr("stroke", "light-grey")
+                      .attr("stroke", "grey")
                       .style("stroke-width", "1px")
                       .style("opacity", 0.7)
-                    
-                    
-
+                  
                 }  
             }
             
@@ -312,7 +318,7 @@ d3.csv("freq_by_state_latlong.csv", function(err, data) {
                                 .ticks(50)
                                 .orient("bottom");
                 
-                d3.select("svg#infoBox.float-child").append('svg')
+                d3.select("#infoBox").append('g').append('svg')
                     .attr('width', bwidth)
                     .attr('height', bheight)
 //                     .style('background', '#c9d7d6')
